@@ -1,22 +1,28 @@
-{% extends "index.html" %}
+{% extends 'index.html' %}
 {% block content %}
-    <div class="container" style="position: fixed;
-                                  top: 50%;
-                                  left: 50%;
-                                  width: 335px;
-                                  height: 200px;
-                                  margin: -100px 0 0 -150px;
-                                  ">
-        <h2 style="text-align: center">Upload file with proxy</h2>
-        <div  style="display: flex;
-                     justify-content: center;">
-              <form action='/enter_info' method="post" enctype="multipart/form-data" style="display: flex; padding-top: 10px;">
-                <input type=file name=file value="proxy" class="btn btn-default" multiple>
-                <input type=submit value='Check it' class="btn btn-default js-button">
-              </form>
-        </div>
-        <p style="text-align: center; margin: 0px; padding-top: 20px;">
-            <a href="{{ url_for('.download_file') }}" style="font-size: 18px; color: green;">Show checked proxy</a>
-        </p>
+    <div class="container">
+            <h2 style="text-align: center">Upload file with proxy</h2>
+            <div  style="display: flex;
+                     justify-content: center;
+                     align-items: center;
+                     flex-direction: column;">
+                <form method="post">
+                    {{ form.hidden_tag() }}
+                    <div style="width: 611px;
+                                height: 150px;">
+                        {{ form.proxy(type="textarea", placeholder="Enter proxy", style="width: 611px; height: 150px; resize: none;") }}
+                    </div>
+                    <div style="width: 611px;
+                                height: 150px;">
+                        {{ form.api_key(type="textarea", placeholder="Enter api-key", style="margin-top: 10px; width: 611px; height: 150px; resize: none;") }}
+                        {{ form.submit(style="width: 100%; font-size: 16px;") }}
+                    </div>
+                </form>
+
+                <h2 style="text-align: center; padding-top: 40px;">Checked proxy</h2>
+                <textarea style="width: 611px; height: 350px; resize: none;">
+                    {{ checked_row }}
+                </textarea>
+            </div>
     </div>
 {% endblock %}

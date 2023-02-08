@@ -1,4 +1,5 @@
 from config import Config
+from forms import CheckForm
 
 import os
 import time
@@ -6,7 +7,7 @@ import concurrent.futures
 from datetime import datetime
 
 import asyncio
-from flask import Flask, render_template, redirect, url_for, request, send_file
+from flask import Flask, render_template, redirect, url_for, request, send_file, flash
 from flask_bootstrap import Bootstrap
 
 import aiohttp
@@ -28,10 +29,6 @@ data_folder = os.path.join(os.getcwd(), 'result_data')
 get_folder = os.path.join(os.getcwd(), 'uploaded_file')
 unchecked_file = os.path.join(os.getcwd(), get_folder)
 checked_proxy = os.path.join(os.getcwd(), data_folder)
-
-
-if not os.path.exists(data_folder):
-    os.mkdir(data_folder)
 
 headers = {
     'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36'
@@ -69,7 +66,7 @@ async def check_proxy(params, key, url, score):
 
                         print(f'{fraud_score} {api_url} {ip} {params}')
                         # !!!!
-                        if fraud_score >= score:
+                        if fraud_score <= score:
                             with open(os.path.join(data_folder, f'checked_by_api_proxy.txt'), 'a') as checked:
                                 pre_proxy = params.replace('http://', '').split('@')[::-1]
                                 original_proxy = ':'.join(pre_proxy)
@@ -134,15 +131,26 @@ def main() -> None:
     print(stop-start)
 
 
-@app.route('/')
-def index():
-    return render_template('index.html', title='Check it')
-
-
-@app.route('/enter_info', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
+# @app.route('/enter_info', methods=['GET', 'POST'])
 def upload_file():
-    path_to_valid_proxy = os.path.join(data_folder, 'checked_by_api_proxy.txt')
-    if request.method == 'POST':
+    if not os.path.exists(data_folder):
+        os.mkdir(data_folder)
+
+    if not os.path.exists(get_folder):
+        os.mkdir(get_folder)
+
+    form = CheckForm()
+
+    if form.validate_on_submit():
+        with open(os.path.join(get_folder, 'proxies.txt'), 'w') as proxy:
+            proxy.write(f'{form.proxy.data}\n')
+        with open(os.path.join(get_folder, 'api_key.txt'), 'w') as proxy:
+            proxy.write(f'{form.api_key.data}\n')
+        print('{}, {}'.format(
+            form.proxy.data, form.api_key.data))
+
+        path_to_valid_proxy = os.path.join(data_folder, 'checked_by_api_proxy.txt')
         if os.path.exists(os.path.join(checked_proxy, 'checked_by_api_proxy.txt')):
             os.remove(os.path.join(checked_proxy, 'checked_by_api_proxy.txt'))
         if os.path.exists(os.path.join(checked_proxy, 'expired_key.txt')):
@@ -158,20 +166,16 @@ def upload_file():
 
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
 
-    main()
-    if os.path.exists(path_to_valid_proxy):
-        return render_template('info.html')
-    elif os.path.exists(os.path.join(checked_proxy, 'expired_key.txt')):
-        return render_template('no_valid_key.html')
-    else:
-        return render_template('no_valid_proxy.html')
-
-
-@app.route('/show_proxy')
-def download_file():
-    path = os.path.join(data_folder, 'checked_by_api_proxy.txt')
-
-    return send_file(path)
+        main()
+        if os.path.exists(path_to_valid_proxy):
+            with open(path_to_valid_proxy, 'r') as checked:
+                checked_row = checked.read().strip()
+            return render_template('info.html', form=form, checked_row=checked_row)
+        elif os.path.exists(os.path.join(checked_proxy, 'expired_key.txt')):
+            return render_template('no_valid_key.html', form=form)
+        else:
+            return render_template('no_valid_proxy.html', form=form)
+    return render_template('index.html', title='Check it', form=form)
 
 
 if __name__ == '__main__':
