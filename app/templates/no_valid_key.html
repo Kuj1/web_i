@@ -1,0 +1,22 @@
+{% extends "index.html" %}
+{% block content %}
+    <div class="container" style="position: fixed;
+                                  top: 50%;
+                                  left: 50%;
+                                  width: 335px;
+                                  height: 200px;
+                                  margin: -100px 0 0 -150px;
+                                  ">
+        <h2 style="text-align: center">Upload file with proxy</h2>
+        <div  style="display: flex;
+                     justify-content: center;">
+              <form action='/enter_info' method="post" enctype="multipart/form-data" style="display: flex; padding-top: 10px;">
+                <input type=file name=file value="proxy" class="btn btn-default" multiple>
+                <input type=submit value='Check it' class="btn btn-default js-button">
+              </form>
+        </div>
+        <p style="text-align: center; margin: 0px; padding-top: 20px; font-size: 18px; color: red;">
+            "One or many of api-key was burned"
+        </p>
+    </div>
+{% endblock %}

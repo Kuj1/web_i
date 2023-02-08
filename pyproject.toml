@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "web-i"
+version = "0.1.0"
+description = ""
+authors = ["kuj1 <the.same.dentist@gmail.com>"]
+readme = "README.md"
+packages = [{include = "web_i"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+flask = "^2.2.2"
+flask-bootstrap = "^3.3.7.1"
+lxml = "^4.9.2"
+bs4 = "^0.0.1"
+aiohttp = "^3.8.3"
+asyncio = "^3.4.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
