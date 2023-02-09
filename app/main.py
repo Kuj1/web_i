@@ -1,5 +1,5 @@
 from config import Config
-from forms import CheckForm
+from forms import CheckForm, ResultForm
 
 import os
 import time
@@ -141,6 +141,7 @@ def upload_file():
         os.mkdir(get_folder)
 
     form = CheckForm()
+    res = ResultForm()
 
     if form.validate_on_submit():
         with open(os.path.join(get_folder, 'proxies.txt'), 'w') as proxy:
@@ -170,7 +171,8 @@ def upload_file():
         if os.path.exists(path_to_valid_proxy):
             with open(path_to_valid_proxy, 'r') as checked:
                 checked_row = checked.read().strip()
-            return render_template('info.html', form=form, checked_row=checked_row)
+                res.result_proxy.data = checked_row
+            return render_template('info.html', form=form, res=res, checked_row=checked_row)
         elif os.path.exists(os.path.join(checked_proxy, 'expired_key.txt')):
             return render_template('no_valid_key.html', form=form)
         else:
