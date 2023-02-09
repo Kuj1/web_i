@@ -18,11 +18,10 @@
                         {{ form.submit(style="width: 100%; font-size: 16px;") }}
                     </div>
                 </form>
-
+            </div>
+            <div style="display: flex; flex-direction: column; position: relative; top: 50px;">
                 <h2 style="text-align: center; padding-top: 40px;">Checked proxy</h2>
-                <textarea style="width: 611px; height: 350px; resize: none;">
-                    {{ checked_row }}
-                </textarea>
+                {{ res.result_proxy(type="textarea", style="width: 611px; height: 350px; resize: none; align-self: center;") }}
             </div>
     </div>
 {% endblock %}
